@@ -31,7 +31,7 @@ class HanHanRescueSeeding(_PluginBase):
     # 插件图标
     plugin_icon = "https://raw.githubusercontent.com/wikrin/MoviePilot-Plugins/main/icons/alter_1.png"
     # 插件版本
-    plugin_version = "1.2.6"
+    plugin_version = "1.2.6.1"
     # 插件作者
     plugin_author = "Seed680"
     # 作者主页
@@ -43,7 +43,7 @@ class HanHanRescueSeeding(_PluginBase):
     # 可使用的用户级别
     auth_level = 2
 
-    domain = "hhanclub.top"
+    domain = "hhanclub.net"
     # 私有属性
     downloader_helper = None
     _scheduler = None
@@ -69,11 +69,14 @@ class HanHanRescueSeeding(_PluginBase):
             # 获取站点信息
             self.site = SiteOper().get_by_domain(self.domain)
             if not self.site:
-                self.domain = "hhan.club"
+                self.domain = "hhanclub.top"
                 self.site = SiteOper().get_by_domain(self.domain)
                 if not self.site:
-                    logger.error(f"憨憨站点未配置，请先在系统配置中添加站点")
-                    return
+                    self.domain = "hhan.club"
+                    self.site = SiteOper().get_by_domain(self.domain)
+                    if not self.site:
+                        logger.error(f"憨憨站点未配置，请先在系统配置中添加站点")
+                        return
 
             # 读取配置
             if config:
