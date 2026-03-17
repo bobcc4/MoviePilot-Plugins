@@ -320,5 +320,17 @@
             "v1.0": "增加排除目录；支持选择监听的下载器；调整默认格式化模板；修复一些bug",
             "v0.0.1": "测试"
         }
+    },
+    "MediaServerMsgMod": {
+        "name": "媒体服务器通知插件魔改版",
+        "description": "监听Emby/Jellyfin/Plex等媒体服务器的Webhook事件",
+        "labels": "通知",
+        "version": "1.8.2.1",
+        "icon": "https://raw.githubusercontent.com/Seed680/MoviePilot-Plugins/main/icons/customplugin.png",
+        "author": "jxxghp,Seed680",
+        "level": 1,
+        "history": {
+            "v1.8.2.1": "修复一些bug"
+        }
     }
 }
