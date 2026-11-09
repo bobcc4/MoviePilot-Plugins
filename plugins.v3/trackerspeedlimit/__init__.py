@@ -23,13 +23,13 @@ from app.sdk.utilities import StringUtils
 
 class TrackerSpeedLimit(_PluginBase):
     # 插件名称
-    plugin_name = "带宽速度限制"
+    plugin_name = "带宽速度限制魔改版"
     # 插件描述
-    plugin_desc = "带宽速度限制插件"
+    plugin_desc = "带宽速度限制魔改版"
     # 插件图标
-    plugin_icon = "https://raw.githubusercontent.com/Seed680/MoviePilot-Plugins/main/icons/customplugin.png"
+    plugin_icon = "https://raw.githubusercontent.com/bobcc4/MoviePilot-Plugins/main/icons/customplugin.png"
     # 插件版本
-    plugin_version = "1.0.2"
+    plugin_version = "1.0.1"
     # 插件作者
     plugin_author = "Seed680,bobcc4"
     # 作者主页
