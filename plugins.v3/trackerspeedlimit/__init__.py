@@ -29,11 +29,11 @@ class TrackerSpeedLimit(_PluginBase):
     # 插件图标
     plugin_icon = "https://raw.githubusercontent.com/Seed680/MoviePilot-Plugins/main/icons/customplugin.png"
     # 插件版本
-    plugin_version = "1.0.1"
+    plugin_version = "1.0.2"
     # 插件作者
-    plugin_author = "Seed680"
+    plugin_author = "Seed680,bobcc4"
     # 作者主页
-    author_url = "https://github.com/Seed680"
+    author_url = "https://github.com/bobcc4"
     # 插件配置项ID前缀
     plugin_config_prefix = "trackerspeedlimit_"
     # 加载顺序
