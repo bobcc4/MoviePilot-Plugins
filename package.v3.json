@@ -178,16 +178,15 @@
         }
     },
     "TrackerSpeedLimit": {
-        "name": "带宽速度限制",
-        "description": "带宽速度限制",
+        "name": "带宽速度限制魔改版",
+        "description": "带宽速度限制魔改版",
         "labels": "",
-        "version": "1.0.2",
+        "version": "1.0.1",
         "system_version": ">=3.0.0",
-        "icon": "https://raw.githubusercontent.com/Seed680/MoviePilot-Plugins/main/icons/customplugin.png",
+        "icon": "https://raw.githubusercontent.com/bobcc4/MoviePilot-Plugins/main/icons/customplugin.png",
         "author": "Seed680,bobcc4",
         "level": 1,
         "history": {
-            "v1.0.2": "作者改为 Seed680,bobcc4，作者主页指向 bobcc4",
             "v1.0.1": "改为下载完成后再设置上传限速, 下载中不再限速; 修复保存配置丢失下载器监控开关的问题",
             "v1.0.0": "适配 MoviePilot V3",
             "v0.8.2": "修复定时任务设置错误的问题",
