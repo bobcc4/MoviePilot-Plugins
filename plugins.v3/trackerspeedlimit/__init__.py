@@ -29,7 +29,7 @@ class TrackerSpeedLimit(_PluginBase):
     # 插件图标
     plugin_icon = "https://raw.githubusercontent.com/Seed680/MoviePilot-Plugins/main/icons/customplugin.png"
     # 插件版本
-    plugin_version = "1.0.0"
+    plugin_version = "1.0.1"
     # 插件作者
     plugin_author = "Seed680"
     # 作者主页
@@ -159,6 +159,7 @@ class TrackerSpeedLimit(_PluginBase):
             "downloaders": self._downloaders,
             "onlyonce": False,  # 始终返回False,
             "siteConfig": self._siteConfig,
+            "watch": self._watch,
         }
 
     def _get_all_downloaders(self) -> List[Any]:
@@ -359,6 +360,11 @@ class TrackerSpeedLimit(_PluginBase):
                     _hash = self._get_hash(torrent=torrent, dl_type=service.type)
                     if not _hash:
                         continue
+                    # 做种完成(下载完成)后才设置限速, 下载中/校验中/异常状态一律跳过
+                    if not self._is_download_finished(torrent=torrent, dl_type=service.type):
+                        logger.debug(
+                            f"{self.LOG_TAG}{_name} 尚未完成下载, 跳过限速 ...")
+                        continue
                     trackers = self._get_trackers(torrent=torrent, dl_type=service.type)
                     for tracker in trackers:
                         logger.debug(f"tracker: {tracker} ...")
@@ -378,6 +384,55 @@ class TrackerSpeedLimit(_PluginBase):
                         f"{self.LOG_TAG}分析种子信息时发生了错误: {str(e)}", exc_info=True)
 
         logger.info(f"{self.LOG_TAG}执行完成")
+
+    # qBittorrent 中已下载完成(处于做种阶段)的状态
+    _QB_SEEDING_STATES = {
+        "uploading", "stalledUP", "queuedUP", "pausedUP", "stoppedUP",
+        "forcedUP", "checkingUP", "moving"
+    }
+    # Transmission 中已下载完成(处于做种阶段)的状态
+    _TR_SEEDING_STATES = {"seeding", "seed_wait"}
+
+    @classmethod
+    def _is_download_finished(cls, torrent: Any, dl_type: str) -> bool:
+        """
+        判断种子是否已完成下载(进入做种阶段), 用于"做种完成后再限速"
+        :return: True 表示已完成下载
+        """
+        try:
+            if dl_type == "qbittorrent":
+                progress = torrent.get("progress")
+                if progress is None:
+                    # 兜底: 以剩余字节数判断
+                    amount_left = torrent.get("amount_left")
+                    return amount_left == 0
+                if float(progress) < 0.9999:
+                    return False
+                state = str(torrent.get("state") or "")
+                if state and state not in cls._QB_SEEDING_STATES:
+                    # 已完成但仍在做非做种动作(如二次校验/移动)时不计入
+                    return False
+                return True
+            else:
+                info = getattr(torrent, "fields", None)
+                if isinstance(info, dict):
+                    percent = info.get("percentDone")
+                    status = str(info.get("status") or "")
+                    left = info.get("leftUntilDone")
+                else:
+                    percent = getattr(torrent, "percentDone", None)
+                    status = str(getattr(torrent, "status", "") or "")
+                    left = getattr(torrent, "leftUntilDone", None)
+                if left not in (None, 0):
+                    return False
+                if percent is not None and float(percent) < 0.9999:
+                    return False
+                if status and status not in cls._TR_SEEDING_STATES:
+                    return False
+                return percent is not None or left == 0 or status in cls._TR_SEEDING_STATES
+        except Exception as e:
+            logger.warning(f"判断种子下载状态失败, 跳过限速: {str(e)}")
+            return False
 
     @staticmethod
     def _torrent_key(torrent: Any, dl_type: str) -> Optional[Tuple[int, str]]:
@@ -569,6 +624,11 @@ class TrackerSpeedLimit(_PluginBase):
                 # 获取种子hash
                 _hash = self._get_hash(torrent=torrent, dl_type=service.type)
                 if not _hash:
+                    continue
+                # 做种完成(下载完成)后才设置限速, 刚添加下载时必然未完成, 直接跳过
+                if not self._is_download_finished(torrent=torrent, dl_type=service.type):
+                    logger.debug(
+                        f"{self.LOG_TAG}{_name} 尚未完成下载, 跳过限速 ...")
                     continue
                 trackers = self._get_trackers(torrent=torrent, dl_type=service.type)
                 for tracker in trackers:
